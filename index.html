@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VianFairuzz Calculator</title>
+    <style>
+        /* 
+         * 🎨 DESIGN SYSTEM — COMPACT MODE
+         */
+        :root {
+            --bg-deep: #050a14;
+            --app-bg: rgba(10, 20, 40, 0.4);
+            --accent-cyan: #00f2ff;
+            --accent-cyan-dim: rgba(0, 242, 255, 0.1);
+            --accent-cyan-glass: rgba(0, 242, 255, 0.05);
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --btn-bg: rgba(255, 255, 255, 0.03);
+            --btn-hover: rgba(255, 255, 255, 0.08);
+            --op-color: #00f2ff;
+            --font-mono: 'SF Mono', 'Roboto Mono', 'Courier New', monospace;
+            --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body.theme-red {
+            --bg-deep: #0f0202;
+            --app-bg: rgba(40, 10, 10, 0.4);
+            --accent-cyan: #ff3333;
+            --accent-cyan-dim: rgba(255, 51, 51, 0.1);
+            --accent-cyan-glass: rgba(255, 51, 51, 0.05);
+            --op-color: #ff3333;
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            overflow: hidden;
+            height: 100vh; width: 100vw;
+            display: flex; justify-content: center; align-items: center;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Background FX */
+        #ambient-glow {
+            position: fixed; inset: 0; pointer-events: none; z-index: -2;
+            background: radial-gradient(circle at 50% -20%, var(--accent-cyan-dim), transparent 60%);
+            opacity: 0.6; transition: background 0.8s ease;
+        }
+        #particle-canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+
+        /* App Container */
+        .app-wrapper {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            background: var(--app-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* COMPACT DESKTOP LAYOUT */
+        @media (min-width: 480px) {
+            .app-wrapper {
+                width: 300px; 
+                height: 580px; 
+                border-radius: 24px;
+                box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        /* Header */
+        .app-header {
+            padding: 10px 15px; 
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 10;
+        }
+        .brand {
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 1px;
+            color: var(--text-muted); text-transform: uppercase;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .brand span { color: var(--accent-cyan); }
+        .theme-btn {
+            background: rgba(255,255,255,0.05); border: none;
+            width: 28px; height: 28px; border-radius: 50%;
+            color: var(--accent-cyan); display: grid; place-items: center;
+            font-size: 0.8rem; cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .theme-btn:active { transform: scale(0.9); }
+
+        /* Display Screen */
+        .display-area {
+            flex: 1;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 10px 20px; 
+            text-align: right;
+            position: relative;
+        }
+        .history {
+            color: var(--text-muted);
+            font-size: 0.8rem; 
+            font-family: var(--font-mono);
+            min-height: 1rem;
+            margin-bottom: 2px;
+            opacity: 0.7;
+        }
+        .current {
+            color: var(--text-main);
+            font-size: 2.2rem; 
+            font-weight: 200;
+            font-family: var(--font-mono);
+            line-height: 1;
+            word-wrap: break-word; word-break: break-all;
+            text-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        /* Keypad */
+        .keypad {
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px; 
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            border-radius: 0 0 24px 24px;
+        }
+        @media (min-width: 480px) {
+            .keypad { border-radius: 0 0 24px 24px; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px; 
+        }
+
+        .btn {
+            aspect-ratio: 1;
+            border-radius: 12px; 
+            border: none;
+            background: var(--btn-bg);
+            color: var(--text-main);
+            font-size: 1.1rem; 
+            font-family: var(--font-mono);
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            position: relative; overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn:active { transform: scale(0.92); background: var(--btn-hover); }
+
+        .btn.op {
+            color: var(--op-color);
+            font-weight: 500;
+            background: var(--accent-cyan-glass);
+            font-size: 1.2rem;
+        }
+        .btn.top {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-family: var(--font-ui);
+            font-weight: 600;
+        }
+        
+        /* THE EQUALS BUTTON - RIGHT SIDE OF DOT */
+        .btn.eq {
+            background: var(--accent-cyan);
+            color: #000;
+            font-weight: 700;
+            font-size: 1.4rem; 
+            box-shadow: 0 0 15px var(--accent-cyan-dim);
+            /* grid-column removed to make it fit standard 1-slot size */
+        }
+        .btn.eq:active {
+            background: #fff;
+            transform: scale(0.95);
+            box-shadow: 0 0 20px var(--accent-cyan);
+        }
+
+        /* Spanning Logic */
+        .span-2 { grid-column: span 2; aspect-ratio: auto; height: 100%; }
+
+        /* Ripple Effect */
+        .ripple {
+            position: absolute; border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.3);
+            animation: rippleAnim 0.4s linear forwards;
+        }
+        @keyframes rippleAnim {
+            0% { width: 0; height: 0; opacity: 0.5; }
+            100% { width: 200px; height: 200px; opacity: 0; }
+        }
+
+        /* Cursor */
+        @media (hover: hover) and (pointer: fine) {
+            body { cursor: none; }
+            #cursor {
+                position: fixed; width: 15px; height: 15px; border: 2px solid var(--accent-cyan);
+                border-radius: 50%; pointer-events: none; z-index: 9999;
+                transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s;
+                mix-blend-mode: difference;
+            }
+            #cursor.hovered { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-color: transparent; }
+        }
+        #cursor { display: none; }
+
+    </style>
+</head>
+<body>
+
+    <div id="ambient-glow"></div>
+    <canvas id="particle-canvas"></canvas>
+    <div id="cursor"></div>
+
+    <div class="app-wrapper">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="brand">VianFairuzz <span>System</span></div>
+            <button class="theme-btn" id="themeBtn" title="Toggle Theme">◑</button>
+        </div>
+
+        <!-- Screen -->
+        <div class="display-area">
+            <div class="history" id="history-operand"></div>
+            <div class="current" id="current-operand">0</div>
+        </div>
+
+        <!-- Keypad -->
+        <div class="keypad">
+            <div class="grid">
+                <!-- Row 1 -->
+                <button class="btn top" data-action="clear">AC</button>
+                <button class="btn top" data-action="delete">DEL</button>
+                <button class="btn op" data-action="operation" data-value="%">%</button>
+                <button class="btn op" data-action="operation" data-value="÷">÷</button>
+                
+                <!-- Row 2 -->
+                <button class="btn" data-action="number" data-value="7">7</button>
+                <button class="btn" data-action="number" data-value="8">8</button>
+                <button class="btn" data-action="number" data-value="9">9</button>
+                <button class="btn op" data-action="operation" data-value="×">×</button>
+                
+                <!-- Row 3 -->
+                <button class="btn" data-action="number" data-value="4">4</button>
+                <button class="btn" data-action="number" data-value="5">5</button>
+                <button class="btn" data-action="number" data-value="6">6</button>
+                <button class="btn op" data-action="operation" data-value="-">-</button>
+                
+                <!-- Row 4 -->
+                <button class="btn" data-action="number" data-value="1">1</button>
+                <button class="btn" data-action="number" data-value="2">2</button>
+                <button class="btn" data-action="number" data-value="3">3</button>
+                <button class="btn op" data-action="operation" data-value="+">+</button>
+                
+                <!-- Row 5: 0 (span 2) | . | = -->
+                <button class="btn span-2" data-action="number" data-value="0">0</button>
+                <button class="btn" data-action="number" data-value=".">.</button>
+                <button class="btn eq" data-action="compute">=</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const isTouchDevice = window.matchMedia("(hover: none) or (pointer: coarse)").matches;
+        const state = { theme: 'normal', mouse: { x: -100, y: -100 }, cursor: { x: -100, y: -100 } };
+
+        class Calculator {
+            constructor(prev, curr) {
+                this.prevText = prev;
+                this.currText = curr;
+                this.clear();
+            }
+            clear() { this.curr = ''; this.prev = ''; this.op = undefined; this.update(); }
+            delete() { this.curr = this.curr.toString().slice(0, -1); this.update(); }
+            append(n) {
+                if (n === '.' && this.curr.includes('.')) return;
+                this.curr = this.curr.toString() + n.toString();
+                this.update();
+            }
+            chooseOp(op) {
+                if (this.curr === '') return;
+                if (this.prev !== '') this.compute();
+                this.op = op;
+                this.prev = this.curr;
+                this.curr = '';
+                this.update();
+            }
+            compute() {
+                let res;
+                const p = parseFloat(this.prev);
+                const c = parseFloat(this.curr);
+                if (isNaN(p) || isNaN(c)) return;
+                switch(this.op) {
+                    case '+': res = p + c; break;
+                    case '-': res = p - c; break;
+                    case '×': res = p * c; break;
+                    case '÷': res = p / c; break;
+                    case '%': res = p % c; break;
+                    default: return;
+                }
+                this.curr = res;
+                this.op = undefined;
+                this.prev = '';
+                this.update();
+            }
+            formatNum(n) {
+                const str = n.toString();
+                const int = parseFloat(str.split('.')[0]);
+                const dec = str.split('.')[1];
+                let intDisplay = int.toLocaleString('en', { maximumFractionDigits: 0 });
+                if (dec != null) return `${intDisplay}.${dec}`;
+                return intDisplay;
+            }
+            update() {
+                this.currText.innerText = this.curr === '' ? '0' : this.formatNum(this.curr);
+                if (this.op != null) this.prevText.innerText = `${this.formatNum(this.prev)} ${this.op}`;
+                else this.prevText.innerText = '';
+            }
+        }
+
+        const calc = new Calculator(document.getElementById('history-operand'), document.getElementById('current-operand'));
+        const buttons = document.querySelectorAll('.btn');
+        
+        buttons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                const rect = btn.getBoundingClientRect();
+                ripple.style.left = `${e.clientX - rect.left}px`;
+                ripple.style.top = `${e.clientY - rect.top}px`;
+                btn.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 400);
+
+                const act = btn.dataset.action;
+                const val = btn.dataset.value;
+                if (act === 'number') calc.append(val);
+                if (act === 'operation') calc.chooseOp(val);
+                if (act === 'compute') calc.compute();
+                if (act === 'clear') calc.clear();
+                if (act === 'delete') calc.delete();
+            });
+            btn.addEventListener('mouseenter', () => { if(!isTouchDevice) document.getElementById('cursor').classList.add('hovered'); });
+            btn.addEventListener('mouseleave', () => { if(!isTouchDevice) document.getElementById('cursor').classList.remove('hovered'); });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= 0 && e.key <= 9 || e.key === '.') calc.append(e.key);
+            if (e.key === '=' || e.key === 'Enter') calc.compute();
+            if (e.key === 'Backspace') calc.delete();
+            if (e.key === 'Escape') calc.clear();
+            if (['+', '-', '*', '/'].includes(e.key)) {
+                const ops = {'+':'+', '-':'-', '*':'×', '/':'÷'};
+                calc.chooseOp(ops[e.key]);
+            }
+        });
+
+        document.getElementById('themeBtn').addEventListener('click', () => {
+            state.theme = state.theme === 'normal' ? 'red' : 'normal';
+            document.body.classList.toggle('theme-red');
+            initParticles();
+        });
+
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+                this.size = Math.random() * 2;
+                this.baseAlpha = Math.random() * 0.3;
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if(this.x < 0) this.x = canvas.width;
+                if(this.x > canvas.width) this.x = 0;
+                if(this.y < 0) this.y = canvas.height;
+                if(this.y > canvas.height) this.y = 0;
+            }
+            draw() {
+                const color = state.theme === 'normal' ? '0, 242, 255' : '255, 51, 51';
+                ctx.fillStyle = `rgba(${color}, ${this.baseAlpha})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = window.innerWidth < 480 ? 40 : 80;
+            for(let i=0; i<count; i++) particles.push(new Particle());
+        }
+
+        function animate() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            if(!isTouchDevice) {
+                state.cursor.x += (state.mouse.x - state.cursor.x) * 0.1;
+                state.cursor.y += (state.mouse.y - state.cursor.y) * 0.1;
+                const c = document.getElementById('cursor');
+                c.style.left = `${state.cursor.x}px`;
+                c.style.top = `${state.cursor.y}px`;
+            }
+            const color = state.theme === 'normal' ? '0, 242, 255' : '255, 51, 51';
+            ctx.strokeStyle = `rgba(${color}, 0.05)`;
+            for(let i=0; i<particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                for(let j=i+1; j<particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const d = Math.sqrt(dx*dx + dy*dy);
+                    if(d < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        if(!isTouchDevice) document.addEventListener('mousemove', e => { state.mouse.x = e.clientX; state.mouse.y = e.clientY; });
+        initParticles();
+        animate();
+    </script>
+</body>
+</html>
