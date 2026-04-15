@@ -4,32 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VianFairuzz Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* 
-         * 🎨 DESIGN SYSTEM — COMPACT MODE
-         */
         :root {
-            --bg-deep: #050a14;
-            --app-bg: rgba(10, 20, 40, 0.4);
-            --accent-cyan: #00f2ff;
-            --accent-cyan-dim: rgba(0, 242, 255, 0.1);
-            --accent-cyan-glass: rgba(0, 242, 255, 0.05);
-            --text-main: #ffffff;
+            --bg-page: #f1f5f9;
+            --bg-card: #ffffff;
+            --bg-display: #0f172a;
+            --text-display: #ffffff;
+            --text-main: #0f172a;
             --text-muted: #94a3b8;
-            --btn-bg: rgba(255, 255, 255, 0.03);
-            --btn-hover: rgba(255, 255, 255, 0.08);
-            --op-color: #00f2ff;
-            --font-mono: 'SF Mono', 'Roboto Mono', 'Courier New', monospace;
-            --font-ui: 'Inter', system-ui, -apple-system, sans-serif;
-        }
-
-        body.theme-red {
-            --bg-deep: #0f0202;
-            --app-bg: rgba(40, 10, 10, 0.4);
-            --accent-cyan: #ff3333;
-            --accent-cyan-dim: rgba(255, 51, 51, 0.1);
-            --accent-cyan-glass: rgba(255, 51, 51, 0.05);
-            --op-color: #ff3333;
+            --btn-num: #e2e8f0;
+            --btn-num-hover: #f1f5f9;
+            --btn-num-active: #cbd5e1;
+            --btn-op: #16a34a;
+            --btn-op-hover: #15803d;
+            --btn-eq: #22c55e;
+            --btn-eq-hover: #16a34a;
+            --btn-clear: #ef4444;
+            --btn-clear-hover: #dc2626;
+            --border: #e2e8f0;
+            --radius: 14px;
+            --shadow-card: 0 10px 40px rgba(0,0,0,0.08);
         }
 
         * {
@@ -39,170 +34,229 @@
         }
 
         body {
-            background-color: var(--bg-deep);
+            background: var(--bg-page);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
             color: var(--text-main);
-            font-family: var(--font-ui);
-            overflow: hidden;
-            height: 100vh; width: 100vw;
-            display: flex; justify-content: center; align-items: center;
-            transition: background-color 0.5s ease;
         }
 
-        /* Background FX */
-        #ambient-glow {
-            position: fixed; inset: 0; pointer-events: none; z-index: -2;
-            background: radial-gradient(circle at 50% -20%, var(--accent-cyan-dim), transparent 60%);
-            opacity: 0.6; transition: background 0.8s ease;
-        }
-        #particle-canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
-
-        /* App Container */
+        /* ───── App Card ───── */
         .app-wrapper {
-            width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-            background: var(--app-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-card);
+            border-radius: 20px;
+            box-shadow: var(--shadow-card);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
 
-        /* COMPACT DESKTOP LAYOUT */
-        @media (min-width: 480px) {
-            .app-wrapper {
-                width: 300px; 
-                height: 640px; 
-                border-radius: 24px;
-                box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5);
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            }
-        }
-
-        /* Header */
+        /* ───── Header ───── */
         .app-header {
-            padding: 10px 15px; 
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 10;
+            padding: 16px 20px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .brand {
-            font-size: 0.7rem; font-weight: 600; letter-spacing: 1px;
-            color: var(--text-muted); text-transform: uppercase;
-            display: flex; align-items: center; gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
         }
-        .brand span { color: var(--accent-cyan); }
-        
-        .header-actions {
-            display: flex; gap: 8px;
-        }
-
+        .brand span { color: var(--btn-op); }
+        .header-actions { display: flex; gap: 8px; }
         .icon-btn {
-            background: rgba(255,255,255,0.05); border: none;
-            width: 28px; height: 28px; border-radius: 50%;
-            color: var(--accent-cyan); display: grid; place-items: center;
-            font-size: 0.8rem; cursor: pointer;
-            transition: transform 0.2s;
+            background: var(--btn-num);
+            border: none;
+            width: 34px; height: 34px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            display: grid; place-items: center;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
+        .icon-btn:hover { background: #cbd5e1; }
         .icon-btn:active { transform: scale(0.9); }
 
-        /* Display Screen */
+        /* ───── Display ───── */
         .display-area {
-            flex: 1;
-            display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 10px 20px; 
+            background: var(--bg-display);
+            margin: 0 16px;
+            border-radius: 16px;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            min-height: 130px;
             text-align: right;
-            position: relative;
-            z-index: 5;
         }
         .history-preview {
-            color: var(--text-muted);
-            font-size: 0.8rem; 
-            font-family: var(--font-mono);
-            min-height: 1rem;
-            margin-bottom: 2px;
-            opacity: 0.7;
+            color: rgba(255,255,255,0.45);
+            font-size: 0.85rem;
+            font-weight: 400;
+            min-height: 1.2em;
+            margin-bottom: 6px;
+            transition: opacity 0.15s;
         }
         .current {
-            color: var(--text-main);
-            font-size: 2.2rem; 
-            font-weight: 200;
-            font-family: var(--font-mono);
-            line-height: 1;
-            word-wrap: break-word; word-break: break-all;
-            text-shadow: 0 0 15px rgba(0,0,0,0.5);
+            color: var(--text-display);
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+            word-wrap: break-word;
+            word-break: break-all;
+            transition: opacity 0.15s;
         }
+        .current.flash { opacity: 0.6; }
 
-        /* Keypad */
-        .keypad {
-            background: rgba(0, 0, 0, 0.2);
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 12px; 
-            z-index: 5;
-        }
-        @media (min-width: 480px) {
-            .keypad { border-radius: 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        }
-
+        /* ───── Keypad ───── */
+        .keypad { padding: 16px; }
         .grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 8px; 
+            gap: 10px;
         }
 
         .btn {
             aspect-ratio: 1;
-            border-radius: 12px; 
+            border-radius: var(--radius);
             border: none;
-            background: var(--btn-bg);
-            color: var(--text-main);
-            font-size: 1.1rem; 
-            font-family: var(--font-mono);
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer;
-            transition: all 0.1s ease;
-            position: relative; overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .btn:active { transform: scale(0.92); background: var(--btn-hover); }
-
-        .btn.op {
-            color: var(--op-color);
-            font-weight: 500;
-            background: var(--accent-cyan-glass);
             font-size: 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .btn.top {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            font-family: var(--font-ui);
+
+        /* Number */
+        .btn.num {
+            background: var(--btn-num);
+            color: var(--text-main);
+        }
+        .btn.num:hover {
+            background: var(--btn-num-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .btn.num:active {
+            transform: scale(0.95) translateY(0);
+            background: var(--btn-num-active);
+            box-shadow: none;
+        }
+
+        /* Operator */
+        .btn.op {
+            background: var(--btn-op);
+            color: #ffffff;
             font-weight: 600;
+            font-size: 1.3rem;
         }
-        
-        /* THE EQUALS BUTTON */
+        .btn.op:hover {
+            background: var(--btn-op-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+        }
+        .btn.op:active {
+            transform: scale(0.95) translateY(0);
+            box-shadow: none;
+        }
+
+        /* Clear (AC) */
+        .btn.clear {
+            background: var(--btn-clear);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .btn.clear:hover {
+            background: var(--btn-clear-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(239,68,68,0.25);
+        }
+        .btn.clear:active {
+            transform: scale(0.95) translateY(0);
+            box-shadow: none;
+        }
+
+        /* Utility (DEL, %) */
+        .btn.util {
+            background: var(--btn-num);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .btn.util:hover {
+            background: var(--btn-num-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+        .btn.util:active {
+            transform: scale(0.95) translateY(0);
+            background: var(--btn-num-active);
+            box-shadow: none;
+        }
+
+        /* Equals */
         .btn.eq {
-            background: var(--accent-cyan);
-            color: #000;
+            background: var(--btn-eq);
+            color: #ffffff;
             font-weight: 700;
-            font-size: 1.4rem; 
-            box-shadow: 0 0 15px var(--accent-cyan-dim);
+            font-size: 1.5rem;
+        }
+        .btn.eq:hover {
+            background: var(--btn-eq-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(34,197,94,0.35);
         }
         .btn.eq:active {
-            background: #fff;
-            transform: scale(0.95);
-            box-shadow: 0 0 20px var(--accent-cyan);
+            transform: scale(0.95) translateY(0);
+            box-shadow: none;
         }
 
-        /* Spanning Logic */
-        .span-2 { grid-column: span 2; aspect-ratio: auto; height: 100%; }
+        .span-2 {
+            grid-column: span 2;
+            aspect-ratio: auto;
+            height: 100%;
+        }
 
-        /* 
-         * 🆕 HISTORY OVERLAY 
-         */
+        /* ───── Ripple ───── */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            background: rgba(0,0,0,0.07);
+            animation: rippleAnim 0.45s ease-out forwards;
+        }
+        .btn.op .ripple,
+        .btn.eq .ripple,
+        .btn.clear .ripple {
+            background: rgba(255,255,255,0.2);
+        }
+        @keyframes rippleAnim {
+            0%   { width: 0; height: 0; opacity: 1; }
+            100% { width: 220px; height: 220px; opacity: 0; }
+        }
+
+        /* ───── History Overlay ───── */
         .history-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(5, 10, 20, 0.85);
+            background: rgba(255,255,255,0.97);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             z-index: 50;
@@ -211,220 +265,216 @@
             padding: 20px;
             opacity: 0;
             pointer-events: none;
-            transform: translateY(20px);
+            transform: translateY(8px);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 20px;
         }
-
         .history-overlay.active {
             opacity: 1;
             pointer-events: auto;
             transform: translateY(0);
         }
-
         .history-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
         }
-
         .history-title {
-            color: var(--accent-cyan);
-            font-weight: 600;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
-
         .close-history {
-            background: none;
+            background: var(--btn-num);
             border: none;
             color: var(--text-muted);
-            font-size: 1.5rem;
+            font-size: 1rem;
             cursor: pointer;
-            padding: 5px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
         }
+        .close-history:hover { background: #cbd5e1; }
+        .close-history:active { transform: scale(0.93); }
 
         .history-list {
             flex: 1;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding-right: 5px;
+            gap: 8px;
+            padding-right: 4px;
         }
-
-        /* Custom Scrollbar */
-        .history-list::-webkit-scrollbar { width: 4px; }
-        .history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+        .history-list::-webkit-scrollbar { width: 3px; }
+        .history-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
 
         .history-item {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            padding: 10px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.03);
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: #f8fafc;
             border: 1px solid transparent;
             cursor: pointer;
             transition: all 0.2s;
         }
-
         .history-item:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: var(--accent-cyan-glass);
+            background: #eef2f7;
+            border-color: var(--btn-op);
         }
-
+        .history-item:active { transform: scale(0.98); }
         .h-expression {
             color: var(--text-muted);
-            font-size: 0.8rem;
-            font-family: var(--font-mono);
-            margin-bottom: 2px;
+            font-size: 0.78rem;
+            font-weight: 400;
+            margin-bottom: 3px;
         }
-
         .h-result {
             color: var(--text-main);
-            font-size: 1.1rem;
-            font-family: var(--font-mono);
-            font-weight: 500;
+            font-size: 1.15rem;
+            font-weight: 700;
         }
-
         .clear-history-btn {
-            margin-top: 15px;
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 51, 51, 0.3);
+            margin-top: 14px;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(239,68,68,0.15);
             background: transparent;
-            color: #ff5555;
-            font-size: 0.8rem;
+            color: var(--btn-clear);
+            font-size: 0.78rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
         }
-        .clear-history-btn:hover { background: rgba(255, 51, 51, 0.1); }
+        .clear-history-btn:hover { background: rgba(239,68,68,0.06); }
+        .clear-history-btn:active { transform: scale(0.97); }
 
-        /* 
-         * 🆕 FOOTER SECTION 
-         */
+        /* ───── Footer ───── */
         .app-footer {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px 15px;
-            padding-bottom: max(10px, env(safe-area-inset-bottom));
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: #f8fafc;
+            padding: 14px 16px;
+            padding-bottom: max(14px, env(safe-area-inset-bottom));
+            border-top: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 12px;
-            flex-shrink: 0; 
-            z-index: 5;
+            flex-shrink: 0;
         }
-        @media (min-width: 480px) {
-            .app-footer { border-radius: 0 0 24px 24px; }
-        }
-
         .footer-logo {
             flex-shrink: 0;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            width: 40px; height: 40px;
+            border-radius: 10px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
+            background: #e2e8f0;
         }
-
         .footer-logo img {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             object-fit: cover;
         }
-
         .footer-text {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            width: 100%;
+            min-width: 0;
         }
-
         .f-line-1 {
-            font-size: 0.65rem;
+            font-size: 0.62rem;
             font-weight: 700;
-            color: var(--accent-cyan);
+            color: var(--btn-op);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             line-height: 1.2;
         }
-        
         .f-line-2 {
-            font-size: 0.55rem;
+            font-size: 0.58rem;
             color: var(--text-muted);
-            line-height: 1.2;
+            line-height: 1.3;
             margin-top: 2px;
-            word-wrap: break-word;
         }
-
         .f-line-3 {
-            font-size: 0.5rem;
-            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.52rem;
+            color: #cbd5e1;
             line-height: 1.2;
             margin-top: 2px;
         }
 
-        /* Ripple Effect */
-        .ripple {
-            position: absolute; border-radius: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            background: rgba(255, 255, 255, 0.3);
-            animation: rippleAnim 0.4s linear forwards;
-        }
-        @keyframes rippleAnim {
-            0% { width: 0; height: 0; opacity: 0.5; }
-            100% { width: 200px; height: 200px; opacity: 0; }
-        }
-
-        /* Cursor */
-        @media (hover: hover) and (pointer: fine) {
-            body { cursor: none; }
-            #cursor {
-                position: fixed; width: 15px; height: 15px; border: 2px solid var(--accent-cyan);
-                border-radius: 50%; pointer-events: none; z-index: 9999;
-                transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s;
-                mix-blend-mode: difference;
+        /* ───── Mobile Full-Screen ───── */
+        @media (max-width: 479px) {
+            body { padding: 0; align-items: stretch; }
+            .app-wrapper {
+                max-width: 100%;
+                border-radius: 0;
+                min-height: 100vh;
+                min-height: 100dvh;
             }
-            #cursor.hovered { width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-color: transparent; }
+            .display-area {
+                margin: 0;
+                border-radius: 0;
+                min-height: 150px;
+                padding: 24px 20px;
+            }
+            .current { font-size: 3rem; }
+            .btn { font-size: 1.3rem; border-radius: 16px; }
+            .btn.util, .btn.clear { font-size: 0.9rem; }
+            .keypad { padding: 12px; gap: 8px; }
+            .grid { gap: 8px; }
+            .history-overlay { border-radius: 0; }
         }
-        #cursor { display: none; }
 
+        /* Disable hover on touch devices */
+        @media (hover: none) {
+            .btn:hover,
+            .icon-btn:hover,
+            .close-history:hover,
+            .clear-history-btn:hover {
+                transform: none !important;
+                box-shadow: none !important;
+                background: inherit;
+            }
+            .btn.num:hover { background: var(--btn-num); }
+            .btn.op:hover { background: var(--btn-op); }
+            .btn.eq:hover { background: var(--btn-eq); }
+            .btn.clear:hover { background: var(--btn-clear); }
+            .btn.util:hover { background: var(--btn-num); }
+            .icon-btn:hover { background: var(--btn-num); }
+            .close-history:hover { background: var(--btn-num); }
+            .clear-history-btn:hover { background: transparent; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="ambient-glow"></div>
-    <canvas id="particle-canvas"></canvas>
-    <div id="cursor"></div>
-
     <div class="app-wrapper">
         <!-- Header -->
         <div class="app-header">
-            <div class="brand">VianFairuzz <span>System</span></div>
+            <div class="brand">VianFairuzz <span>Calc</span></div>
             <div class="header-actions">
                 <button class="icon-btn" id="historyBtn" title="History">🕒</button>
-                <button class="icon-btn" id="themeBtn" title="Toggle Theme">◑</button>
             </div>
         </div>
 
-        <!-- History Overlay (Modal) -->
+        <!-- History Overlay -->
         <div class="history-overlay" id="historyOverlay">
             <div class="history-header">
-                <span class="history-title">CALCULATION HISTORY</span>
-                <button class="close-history" id="closeHistory">✕</button>
+                <span class="history-title">Riwayat Hitungan</span>
+                <button class="close-history" id="closeHistory">Tutup</button>
             </div>
             <div class="history-list" id="historyList">
-                <!-- History items will be injected here -->
-                <div style="text-align:center; color:var(--text-muted); padding:20px; font-size:0.8rem;">No history yet</div>
+                <div style="text-align:center;color:var(--text-muted);padding:30px 10px;font-size:0.8rem;">Belum ada riwayat</div>
             </div>
-            <button class="clear-history-btn" id="clearHistoryBtn">Clear History</button>
+            <button class="clear-history-btn" id="clearHistoryBtn">Hapus Semua Riwayat</button>
         </div>
 
-        <!-- Screen -->
+        <!-- Display -->
         <div class="display-area">
             <div class="history-preview" id="history-operand"></div>
             <div class="current" id="current-operand">0</div>
@@ -434,44 +484,43 @@
         <div class="keypad">
             <div class="grid">
                 <!-- Row 1 -->
-                <button class="btn top" data-action="clear">AC</button>
-                <button class="btn top" data-action="delete">DEL</button>
-                <button class="btn op" data-action="operation" data-value="%">%</button>
+                <button class="btn clear" data-action="clear">AC</button>
+                <button class="btn util" data-action="delete">DEL</button>
+                <button class="btn util" data-action="operation" data-value="%">%</button>
                 <button class="btn op" data-action="operation" data-value="÷">÷</button>
-                
+
                 <!-- Row 2 -->
-                <button class="btn" data-action="number" data-value="7">7</button>
-                <button class="btn" data-action="number" data-value="8">8</button>
-                <button class="btn" data-action="number" data-value="9">9</button>
+                <button class="btn num" data-action="number" data-value="7">7</button>
+                <button class="btn num" data-action="number" data-value="8">8</button>
+                <button class="btn num" data-action="number" data-value="9">9</button>
                 <button class="btn op" data-action="operation" data-value="×">×</button>
-                
+
                 <!-- Row 3 -->
-                <button class="btn" data-action="number" data-value="4">4</button>
-                <button class="btn" data-action="number" data-value="5">5</button>
-                <button class="btn" data-action="number" data-value="6">6</button>
-                <button class="btn op" data-action="operation" data-value="-">-</button>
-                
+                <button class="btn num" data-action="number" data-value="4">4</button>
+                <button class="btn num" data-action="number" data-value="5">5</button>
+                <button class="btn num" data-action="number" data-value="6">6</button>
+                <button class="btn op" data-action="operation" data-value="-">−</button>
+
                 <!-- Row 4 -->
-                <button class="btn" data-action="number" data-value="1">1</button>
-                <button class="btn" data-action="number" data-value="2">2</button>
-                <button class="btn" data-action="number" data-value="3">3</button>
+                <button class="btn num" data-action="number" data-value="1">1</button>
+                <button class="btn num" data-action="number" data-value="2">2</button>
+                <button class="btn num" data-action="number" data-value="3">3</button>
                 <button class="btn op" data-action="operation" data-value="+">+</button>
-                
-                <!-- Row 5: 0 (span 2) | . | = -->
-                <button class="btn span-2" data-action="number" data-value="0">0</button>
-                <button class="btn" data-action="number" data-value=".">.</button>
+
+                <!-- Row 5 -->
+                <button class="btn num span-2" data-action="number" data-value="0">0</button>
+                <button class="btn num" data-action="number" data-value=".">.</button>
                 <button class="btn eq" data-action="compute">=</button>
             </div>
         </div>
 
-        <!-- Footer Section -->
+        <!-- Footer -->
         <div class="app-footer">
             <div class="footer-logo">
-                <!-- PLACEHOLDER IMAGE -->
-                <img src="mamsaka.jpg" alt="School Logo">
+                <img src="mamsaka.jpg" alt="Logo">
             </div>
             <div class="footer-text">
-                <div class="f-line-1">MA MUHAMMADIYAH 1 PACIRAN</div>
+                <div class="f-line-1">MA Muhammadiyah 1 Paciran</div>
                 <div class="f-line-2">Pondok Pesantren Karangasem Muhammadiyah Paciran</div>
                 <div class="f-line-3">Tahun Pelajaran 2025/2026</div>
             </div>
@@ -479,150 +528,175 @@
     </div>
 
     <script>
-        const isTouchDevice = window.matchMedia("(hover: none) or (pointer: coarse)").matches;
-        const state = { theme: 'normal', mouse: { x: -100, y: -100 }, cursor: { x: -100, y: -100 }, history: [] };
+        const state = { history: [] };
 
         class Calculator {
-            constructor(prev, curr) {
-                this.prevText = prev;
-                this.currText = curr;
+            constructor(prevEl, currEl) {
+                this.prevEl = prevEl;
+                this.currEl = currEl;
                 this.clear();
             }
-            clear() { this.curr = ''; this.prev = ''; this.op = undefined; this.update(); }
-            delete() { this.curr = this.curr.toString().slice(0, -1); this.update(); }
+
+            clear() {
+                this.curr = '';
+                this.prev = '';
+                this.op = undefined;
+                this.updateDisplay();
+            }
+
+            delete() {
+                this.curr = this.curr.toString().slice(0, -1);
+                this.updateDisplay();
+            }
+
             append(n) {
                 if (n === '.' && this.curr.includes('.')) return;
+                if (this.curr === '' && n === '.') this.curr = '0';
                 this.curr = this.curr.toString() + n.toString();
-                this.update();
+                this.updateDisplay();
             }
+
             chooseOp(op) {
                 if (this.curr === '') return;
-                if (this.prev !== '') this.compute();
+                if (this.prev !== '') this.compute(true);
                 this.op = op;
                 this.prev = this.curr;
                 this.curr = '';
-                this.update();
+                this.updateDisplay();
             }
-            compute() {
-                let res;
+
+            compute(chain = false) {
                 const p = parseFloat(this.prev);
                 const c = parseFloat(this.curr);
                 if (isNaN(p) || isNaN(c)) return;
-                
-                // Save expression before calculation
-                const expression = `${this.formatNum(this.prev)} ${this.op} ${this.formatNum(this.curr)}`;
 
-                switch(this.op) {
+                const expr = `${this.fmt(this.prev)} ${this.op} ${this.fmt(this.curr)}`;
+                let res;
+
+                switch (this.op) {
                     case '+': res = p + c; break;
-                    case '-': res = p - c; break;
+                    case '-': case '−': res = p - c; break;
                     case '×': res = p * c; break;
-                    case '÷': res = p / c; break;
+                    case '÷': res = c !== 0 ? p / c : 'Error'; break;
                     case '%': res = p % c; break;
                     default: return;
                 }
 
-                // Add to history
-                addHistoryItem(expression, res);
+                if (!chain) {
+                    addHistory(expr, res === 'Error' ? 'Error' : parseFloat(res.toFixed(10)));
+                    // Flash effect on result
+                    this.currEl.classList.add('flash');
+                    setTimeout(() => this.currEl.classList.remove('flash'), 120);
+                }
 
                 this.curr = res;
                 this.op = undefined;
                 this.prev = '';
-                this.update();
+                this.updateDisplay();
             }
-            formatNum(n) {
-                const str = n.toString();
-                const int = parseFloat(str.split('.')[0]);
-                const dec = str.split('.')[1];
-                let intDisplay = int.toLocaleString('en', { maximumFractionDigits: 0 });
-                if (dec != null) return `${intDisplay}.${dec}`;
-                return intDisplay;
+
+            fmt(n) {
+                const s = n.toString();
+                const parts = s.split('.');
+                const int = parseFloat(parts[0]);
+                const dec = parts[1];
+                let display = int.toLocaleString('en', { maximumFractionDigits: 0 });
+                if (dec != null) display += '.' + dec;
+                return display;
             }
-            update() {
-                this.currText.innerText = this.curr === '' ? '0' : this.formatNum(this.curr);
-                if (this.op != null) this.prevText.innerText = `${this.formatNum(this.prev)} ${this.op}`;
-                else this.prevText.innerText = '';
+
+            updateDisplay() {
+                this.currEl.innerText = this.curr === '' ? '0' : this.fmt(this.curr);
+                if (this.op != null) {
+                    this.prevEl.innerText = `${this.fmt(this.prev)} ${this.op}`;
+                } else {
+                    this.prevEl.innerText = '';
+                }
+                // Auto-shrink for long numbers
+                const len = this.currEl.innerText.length;
+                if (len > 12) this.currEl.style.fontSize = '1.8rem';
+                else if (len > 9) this.currEl.style.fontSize = '2.2rem';
+                else this.currEl.style.fontSize = '';
             }
-            loadFromHistory(val) {
+
+            loadResult(val) {
                 this.curr = val.toString();
-                this.update();
+                this.op = undefined;
+                this.prev = '';
+                this.updateDisplay();
             }
         }
 
-        // History Management
-        function addHistoryItem(expr, res) {
-            const item = { expr, res, id: Date.now() };
-            state.history.unshift(item);
-            if (state.history.length > 50) state.history.pop(); // Limit to 50 items
-            renderHistory();
+        /* ── History ── */
+        function addHistory(expr, res) {
+            if (res === 'Error') return;
+            state.history.unshift({ expr, res, id: Date.now() });
+            if (state.history.length > 50) state.history.pop();
         }
 
         function renderHistory() {
             const list = document.getElementById('historyList');
             list.innerHTML = '';
-            
             if (state.history.length === 0) {
-                list.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px; font-size:0.8rem;">No history yet</div>';
+                list.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px 10px;font-size:0.8rem;">Belum ada riwayat</div>';
                 return;
             }
-
             state.history.forEach(item => {
-                const li = document.createElement('div');
-                li.className = 'history-item';
-                li.innerHTML = `
+                const el = document.createElement('div');
+                el.className = 'history-item';
+                el.innerHTML = `
                     <div class="h-expression">${item.expr} =</div>
                     <div class="h-result">${item.res}</div>
                 `;
-                li.addEventListener('click', () => {
-                    calc.loadFromHistory(item.res);
+                el.addEventListener('click', () => {
+                    calc.loadResult(item.res);
                     toggleHistory(false);
                 });
-                list.appendChild(li);
+                list.appendChild(el);
             });
         }
 
         function toggleHistory(show) {
             const overlay = document.getElementById('historyOverlay');
             if (show) {
-                overlay.classList.add('active');
                 renderHistory();
+                overlay.classList.add('active');
             } else {
                 overlay.classList.remove('active');
             }
         }
 
-        // Initialize Calculator
-        const calc = new Calculator(document.getElementById('history-operand'), document.getElementById('current-operand'));
-        const buttons = document.querySelectorAll('.btn');
-        
-        buttons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
+        /* ── Init ── */
+        const calc = new Calculator(
+            document.getElementById('history-operand'),
+            document.getElementById('current-operand')
+        );
+
+        /* ── Button Events ── */
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                // Ripple
                 const ripple = document.createElement('span');
                 ripple.className = 'ripple';
                 const rect = btn.getBoundingClientRect();
                 ripple.style.left = `${e.clientX - rect.left}px`;
                 ripple.style.top = `${e.clientY - rect.top}px`;
                 btn.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 400);
+                setTimeout(() => ripple.remove(), 450);
 
                 const act = btn.dataset.action;
                 const val = btn.dataset.value;
-                if (act === 'number') calc.append(val);
-                if (act === 'operation') calc.chooseOp(val);
-                if (act === 'compute') calc.compute();
-                if (act === 'clear') calc.clear();
-                if (act === 'delete') calc.delete();
+                switch (act) {
+                    case 'number':    calc.append(val); break;
+                    case 'operation': calc.chooseOp(val); break;
+                    case 'compute':   calc.compute(); break;
+                    case 'clear':     calc.clear(); break;
+                    case 'delete':    calc.delete(); break;
+                }
             });
-            btn.addEventListener('mouseenter', () => { if(!isTouchDevice) document.getElementById('cursor').classList.add('hovered'); });
-            btn.addEventListener('mouseleave', () => { if(!isTouchDevice) document.getElementById('cursor').classList.remove('hovered'); });
         });
 
-        // Event Listeners for UI Controls
-        document.getElementById('themeBtn').addEventListener('click', () => {
-            state.theme = state.theme === 'normal' ? 'red' : 'normal';
-            document.body.classList.toggle('theme-red');
-            initParticles();
-        });
-
+        /* ── UI Controls ── */
         document.getElementById('historyBtn').addEventListener('click', () => toggleHistory(true));
         document.getElementById('closeHistory').addEventListener('click', () => toggleHistory(false));
         document.getElementById('clearHistoryBtn').addEventListener('click', () => {
@@ -630,87 +704,24 @@
             renderHistory();
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key >= 0 && e.key <= 9 || e.key === '.') calc.append(e.key);
-            if (e.key === '=' || e.key === 'Enter') calc.compute();
-            if (e.key === 'Backspace') calc.delete();
-            if (e.key === 'Escape') calc.clear();
-            if (['+', '-', '*', '/'].includes(e.key)) {
-                const ops = {'+':'+', '-':'-', '*':'×', '/':'÷'};
-                calc.chooseOp(ops[e.key]);
+        /* ── Keyboard ── */
+        document.addEventListener('keydown', e => {
+            if (e.key >= '0' && e.key <= '9') calc.append(e.key);
+            else if (e.key === '.') calc.append('.');
+            else if (e.key === '=' || e.key === 'Enter') { e.preventDefault(); calc.compute(); }
+            else if (e.key === 'Backspace') calc.delete();
+            else if (e.key === 'Escape') calc.clear();
+            else if (e.key === '%') calc.chooseOp('%');
+            else {
+                const map = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+                if (map[e.key]) calc.chooseOp(map[e.key]);
             }
         });
 
-        // Particle System
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-        
-        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-        window.addEventListener('resize', resize);
-        resize();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.3;
-                this.vy = (Math.random() - 0.5) * 0.3;
-                this.size = Math.random() * 2;
-                this.baseAlpha = Math.random() * 0.3;
-            }
-            update() {
-                this.x += this.vx; this.y += this.vy;
-                if(this.x < 0) this.x = canvas.width;
-                if(this.x > canvas.width) this.x = 0;
-                if(this.y < 0) this.y = canvas.height;
-                if(this.y > canvas.height) this.y = 0;
-            }
-            draw() {
-                const color = state.theme === 'normal' ? '0, 242, 255' : '255, 51, 51';
-                ctx.fillStyle = `rgba(${color}, ${this.baseAlpha})`;
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            particles = [];
-            const count = window.innerWidth < 480 ? 40 : 80;
-            for(let i=0; i<count; i++) particles.push(new Particle());
-        }
-
-        function animate() {
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            if(!isTouchDevice) {
-                state.cursor.x += (state.mouse.x - state.cursor.x) * 0.1;
-                state.cursor.y += (state.mouse.y - state.cursor.y) * 0.1;
-                const c = document.getElementById('cursor');
-                c.style.left = `${state.cursor.x}px`;
-                c.style.top = `${state.cursor.y}px`;
-            }
-            const color = state.theme === 'normal' ? '0, 242, 255' : '255, 51, 51';
-            ctx.strokeStyle = `rgba(${color}, 0.05)`;
-            for(let i=0; i<particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-                for(let j=i+1; j<particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const d = Math.sqrt(dx*dx + dy*dy);
-                    if(d < 100) {
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(animate);
-        }
-
-        if(!isTouchDevice) document.addEventListener('mousemove', e => { state.mouse.x = e.clientX; state.mouse.y = e.clientY; });
-        initParticles();
-        animate();
+        /* ── Close history on overlay click ── */
+        document.getElementById('historyOverlay').addEventListener('click', e => {
+            if (e.target === e.currentTarget) toggleHistory(false);
+        });
     </script>
 </body>
 </html>
